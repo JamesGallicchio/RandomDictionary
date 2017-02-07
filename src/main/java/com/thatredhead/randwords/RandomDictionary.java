@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalTime;
-import java.util.Date;
 import java.util.List;
 
 public class RandomDictionary {
@@ -30,17 +29,26 @@ public class RandomDictionary {
                                 .build())
                         .getInstance();
 
+        boolean retry = false;
         while(true) {
             try {
-                long wait = 3600000 - LocalTime.now().toNanoOfDay()/1000000 % 3600000;
-                System.out.println("Waiting for next hour (" + wait/60000.0 + " minutes)");
-                Thread.sleep(wait);
-                System.out.println("Sending new tweet!");
-                System.out.println(token);
-                t.updateStatus(WordMaker.getRandomWord());
+                if(retry) {
+                    Thread.sleep(10000);
+                    t.updateStatus(WordMaker.getRandomWord());
+                } else {
+                    long wait = 3600000 - LocalTime.now().toNanoOfDay() / 1000000 % 3600000;
+                    System.out.println("Waiting for next hour (" + wait / 60000.0 + " minutes)");
+                    Thread.sleep(wait);
+                    System.out.println("Sending new tweet!");
+                    System.out.println(token);
+                    t.updateStatus(WordMaker.getRandomWord());
+                }
             } catch (IllegalArgumentException e){
 
-            } catch (TwitterException | InterruptedException e) {
+            } catch (TwitterException e) {
+                System.out.println("Twitter request failed! Retrying in 10 seconds.");
+                retry = true;
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }

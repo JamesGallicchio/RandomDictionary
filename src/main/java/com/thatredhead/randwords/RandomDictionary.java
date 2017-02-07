@@ -13,6 +13,8 @@ import java.util.List;
 
 public class RandomDictionary {
 
+    private static final int HOURS = 3;
+
     public static void main(String[] args) {
         List<String> token = null;
         try {
@@ -36,8 +38,8 @@ public class RandomDictionary {
                     Thread.sleep(10000);
                     t.updateStatus(WordMaker.getRandomWord());
                 } else {
-                    long wait = 3600000 - LocalTime.now().toNanoOfDay() / 1000000 % 3600000;
-                    System.out.println("Waiting for next hour (" + wait / 60000.0 + " minutes)");
+                    long wait = HOURS*3600000 - LocalTime.now().toNanoOfDay() / 1000000 % (HOURS*3600000);
+                    System.out.println("Next tweet in " + wait / 60000.0 + " minutes!");
                     Thread.sleep(wait);
                     System.out.println("Sending new tweet!");
                     System.out.println(token);

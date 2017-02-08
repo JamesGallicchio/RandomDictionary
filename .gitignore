@@ -1,4 +1,7 @@
 /twittertoken.txt
-/.idea/
+
+.idea/
+
 /*.iml
-/target/
+
+target/

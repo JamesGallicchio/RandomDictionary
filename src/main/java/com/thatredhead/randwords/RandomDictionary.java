@@ -13,7 +13,7 @@ import java.util.List;
 
 public class RandomDictionary {
 
-    private static final int HOURS = 3;
+    private static final double HOURS = 6.0;
 
     public static void main(String[] args) {
         List<String> token = null;
@@ -22,33 +22,34 @@ public class RandomDictionary {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Twitter t = new TwitterFactory(
-                        new ConfigurationBuilder()
+        TwitterFactory f = new TwitterFactory(
+                            new ConfigurationBuilder()
                                 .setOAuthConsumerKey(token.get(0))
                                 .setOAuthConsumerSecret(token.get(1))
                                 .setOAuthAccessToken(token.get(2))
                                 .setOAuthAccessTokenSecret(token.get(3))
-                                .build())
-                        .getInstance();
+                                .build());
+
+        Twitter t = f.getInstance();
 
         boolean retry = false;
         while(true) {
             try {
                 if(retry) {
+                    t = f.getInstance();
                     Thread.sleep(10000);
                     t.updateStatus(WordMaker.getRandomWord());
                 } else {
-                    long wait = HOURS*3600000 - LocalTime.now().toNanoOfDay() / 1000000 % (HOURS*3600000);
+                    long wait = (int) (HOURS*3600000.0 - LocalTime.now().toNanoOfDay() / 1000000.0 % (HOURS*3600000.0));
                     System.out.println("Next tweet in " + wait / 60000.0 + " minutes!");
                     Thread.sleep(wait);
                     System.out.println("Sending new tweet!");
-                    System.out.println(token);
                     t.updateStatus(WordMaker.getRandomWord());
                 }
             } catch (IllegalArgumentException e){
 
             } catch (TwitterException e) {
-                System.out.println("Twitter request failed! Retrying in 10 seconds.");
+                System.out.println("Twitter request failed! Retrying in 10 seconds:");
                 retry = true;
             } catch (InterruptedException e) {
                 e.printStackTrace();
